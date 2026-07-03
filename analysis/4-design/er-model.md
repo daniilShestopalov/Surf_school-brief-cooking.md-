@@ -13,10 +13,10 @@
 * **Уровень доступа:** **Read / Write** (Приложение обновляет имя при регистрации и теги аллергий в профиле).
 * **Атрибуты:**
   * `id` (UUID, Primary Key) — уникальный идентификатор.
-  * `phone` (String) — номер телефона для авторизации `[FR-10](../2-requirements/functional-requirements.md)`.
+  * `phone` (String) — номер телефона для авторизации [FR-10](../2-requirements/functional-requirements.md).
   * `email` (String, Nullable) — email клиента.
-  * `name` (String, Nullable) — имя пользователя `[FR-15](../2-requirements/functional-requirements.md)`.
-  * `allergy_profile` (JSON / Array of Strings) — список выбранных аллергенов `[FR-25](../2-requirements/functional-requirements.md)`.
+  * `name` (String, Nullable) — имя пользователя [FR-15](../2-requirements/functional-requirements.md).
+  * `allergy_profile` (JSON / Array of Strings) — список выбранных аллергенов [FR-25](../2-requirements/functional-requirements.md).
   * `is_regular` (Boolean) — флаг постоянного клиента (программа лояльности).
 
 ### 1.2 ClassProgram (Программа класса)
@@ -26,7 +26,7 @@
   * `id` (UUID, Primary Key) — уникальный идентификатор.
   * `title` (String) — название программы.
   * `description` (Text) — подробное описание и состав меню.
-  * `complexity` (String / Enum) — уровень сложности `[FR-50](../2-requirements/functional-requirements.md)`.
+  * `complexity` (String / Enum) — уровень сложности [FR-50](../2-requirements/functional-requirements.md).
   * `base_price` (Decimal) — базовая стоимость участия одного человека.
 
 ### 1.3 Chef (Шеф)
@@ -40,7 +40,7 @@
 
 ### 1.4 Slot (Слот расписания)
 Конкретное проведение `ClassProgram` в заданное время с определенным `Chef`.
-* **Уровень доступа:** **Read-Only** (Приложение только запрашивает расписание `[FR-40](../2-requirements/functional-requirements.md)`. Свободные места и инвентарь пересчитываются бэкендом при бронировании).
+* **Уровень доступа:** **Read-Only** (Приложение только запрашивает расписание [FR-40](../2-requirements/functional-requirements.md). Свободные места и инвентарь пересчитываются бэкендом при бронировании).
 * **Атрибуты:**
   * `id` (UUID, Primary Key) — уникальный идентификатор.
   * `program_id` (UUID, Foreign Key) — ссылка на ClassProgram.
@@ -48,22 +48,22 @@
   * `datetime_start` (Timestamp) — дата и время начала класса.
   * `duration` (Integer) — продолжительность в минутах.
   * `max_capacity` (Integer) — общее число рабочих мест.
-  * `available_seats` (Integer) — количество оставшихся мест `[FR-50](../2-requirements/functional-requirements.md)`.
+  * `available_seats` (Integer) — количество оставшихся мест [FR-50](../2-requirements/functional-requirements.md).
   * `status` (String / Enum) — статус (например, SCHEDULED, CANCELLED).
   * `address` (String) — адрес проведения.
-  * `available_equipment_stock` (Integer) — доступный остаток прокатного инвентаря `[FR-65](../2-requirements/functional-requirements.md)`.
+  * `available_equipment_stock` (Integer) — доступный остаток прокатного инвентаря [FR-65](../2-requirements/functional-requirements.md).
   * `equipment_tariff` (Decimal) — стоимость аренды оборудования.
 
 ### 1.5 Booking (Бронирование)
 Факт записи клиента на слот с опциональной арендой инвентаря.
-* **Уровень доступа:** **Read / Write** (Приложение создает брони `[FR-60](../2-requirements/functional-requirements.md)`, отменяет их `[FR-85](../2-requirements/functional-requirements.md)` и выставляет оценки `[FR-100](../2-requirements/functional-requirements.md)`).
+* **Уровень доступа:** **Read / Write** (Приложение создает брони [FR-60](../2-requirements/functional-requirements.md), отменяет их [FR-85](../2-requirements/functional-requirements.md) и выставляет оценки [FR-100](../2-requirements/functional-requirements.md)).
 * **Атрибуты:**
   * `id` (UUID, Primary Key) — уникальный идентификатор брони.
   * `client_id` (UUID, Foreign Key) — ссылка на Client.
   * `slot_id` (UUID, Foreign Key) — ссылка на Slot.
   * `status` (String / Enum) — текущий статус (PENDING_PAYMENT, ACTIVE, CANCELLED_BY_CLIENT, CANCELLED_BY_STUDIO, COMPLETED).
-  * `needs_rental_equipment` (Boolean) — признак аренды экипировки `[FR-65](../2-requirements/functional-requirements.md)`.
-  * `chef_rating` (Integer, Nullable) — оценка, выставленная шефу (от 1 до 5) `[FR-100](../2-requirements/functional-requirements.md)`.
+  * `needs_rental_equipment` (Boolean) — признак аренды экипировки [FR-65](../2-requirements/functional-requirements.md).
+  * `chef_rating` (Integer, Nullable) — оценка, выставленная шефу (от 1 до 5) [FR-100](../2-requirements/functional-requirements.md).
 
 ## 2. Связи (Relationships)
 
