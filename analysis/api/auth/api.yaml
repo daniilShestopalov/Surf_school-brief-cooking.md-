@@ -14,6 +14,8 @@ paths:
       responses:
         '200':
           description: Код отправлен.
+        '429':
+          $ref: '../common/models.yaml#/components/responses/TooManyRequestsError'
 
   /auth/verify-code:
     post:
@@ -34,3 +36,5 @@ paths:
             application/json:
               schema:
                 $ref: './models.yaml#/components/schemas/AuthResponse'
+        '429':
+          $ref: '../common/models.yaml#/components/responses/TooManyRequestsError'

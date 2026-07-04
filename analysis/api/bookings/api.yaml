@@ -53,6 +53,29 @@ paths:
             application/json:
               schema:
                 $ref: '../common/models.yaml#/components/schemas/ErrorResponse'
+        '429':
+          $ref: '../common/models.yaml#/components/responses/TooManyRequestsError'
+
+  /bookings/{id}:
+    get:
+      operationId: getBooking
+      summary: Получить детали конкретного бронирования
+      description: Возвращает детали бронирования по его ID (необходимо для Push-уведомлений).
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '../common/models.yaml#/components/schemas/UUID'
+      responses:
+        '200':
+          description: Детали бронирования.
+          content:
+            application/json:
+              schema:
+                $ref: './models.yaml#/components/schemas/Booking'
 
   /bookings/{id}/cancel:
     post:

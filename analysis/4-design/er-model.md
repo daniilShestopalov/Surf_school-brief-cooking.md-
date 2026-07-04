@@ -17,7 +17,6 @@
   * `email` (String, Nullable) — email клиента.
   * `name` (String, Nullable) — имя пользователя [FR-15](../2-requirements/functional-requirements.md).
   * `allergy_profile` (JSON / Array of Strings) — список выбранных аллергенов [FR-25](../2-requirements/functional-requirements.md).
-  * `is_regular` (Boolean) — флаг постоянного клиента (программа лояльности).
 
 ### 1.2 ClassProgram (Программа класса)
 Шаблон кулинарного мероприятия (тема, меню, сложность).
@@ -27,7 +26,7 @@
   * `title` (String) — название программы.
   * `description` (Text) — подробное описание и состав меню.
   * `complexity` (String / Enum) — уровень сложности [FR-50](../2-requirements/functional-requirements.md).
-  * `base_price` (Decimal) — базовая стоимость участия одного человека.
+  * `base_price` (Integer) — базовая стоимость участия одного человека.
 
 ### 1.3 Chef (Шеф)
 Кулинарный эксперт, который ведет класс.
@@ -52,7 +51,7 @@
   * `status` (String / Enum) — статус (например, SCHEDULED, CANCELLED).
   * `address` (String) — адрес проведения.
   * `available_equipment_stock` (Integer) — доступный остаток прокатного инвентаря [FR-65](../2-requirements/functional-requirements.md).
-  * `equipment_tariff` (Decimal) — стоимость аренды оборудования.
+  * `equipment_tariff` (Integer) — стоимость аренды оборудования.
 
 ### 1.5 Booking (Бронирование)
 Факт записи клиента на слот с опциональной арендой инвентаря.
@@ -99,7 +98,6 @@ erDiagram
         string email
         string name
         json allergy_profile
-        boolean is_regular
     }
 
     CLASS_PROGRAM {
@@ -107,7 +105,7 @@ erDiagram
         string title
         text description
         string complexity
-        decimal base_price
+        int base_price
     }
 
     CHEF {
@@ -128,7 +126,7 @@ erDiagram
         string status
         string address
         int available_equipment_stock
-        decimal equipment_tariff
+        int equipment_tariff
     }
 
     BOOKING {

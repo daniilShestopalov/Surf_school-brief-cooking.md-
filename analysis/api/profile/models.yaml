@@ -5,7 +5,6 @@ components:
       required:
         - id
         - phone
-        - is_regular
       properties:
         id:
           $ref: '../common/models.yaml#/components/schemas/UUID'
@@ -21,8 +20,6 @@ components:
           type: array
           items:
             type: string
-        is_regular:
-          type: boolean
 
     UpdateAllergiesRequest:
       type: object

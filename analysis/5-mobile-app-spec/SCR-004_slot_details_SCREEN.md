@@ -47,7 +47,7 @@
 
 | Назначение | Триггер | Передаваемые параметры |
 |------------|---------|------------------------|
-| [BS-001 Оформление бронирования](./BS-001_booking_confirmation_SCREEN.md) | Кнопка "Забронировать" | `id` (ID слота), `base_price`, `equipment_tariff` |
+| [BS-001 Оформление бронирования](./BS-001_booking_confirmation_SCREEN.md) | Кнопка "Забронировать" | `id` (ID слота), `base_price`, `equipment_tariff`, `available_equipment_stock` |
 | [SCR-007 Детали предстоящей брони](./SCR-007_upcoming_booking_details_SCREEN.md) | Кнопка "Перейти к брони" | Переход, если юзер уже записан |
 
 ---

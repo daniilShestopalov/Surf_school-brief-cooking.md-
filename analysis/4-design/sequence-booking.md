@@ -31,7 +31,7 @@ sequenceDiagram
     App->>App: Расчет итоговой стоимости [FR-75]
     U->>App: Нажимает "Подтвердить запись"
     
-    App->>API: POST /api/bookings {slot_id, needs_rental} [FR-60]
+    App->>API: POST /api/bookings {slot_id, seats_count, needs_rental_equipment} [FR-60]
     
     API->>DB: BEGIN TRANSACTION
     API->>DB: SELECT * FROM Slot WHERE id = slot_id FOR UPDATE
@@ -39,7 +39,10 @@ sequenceDiagram
     
     alt Успешное создание бронирования [HTTP 201 Created]
         Note over API: Бизнес-валидация пройдена (места и инвентарь в наличии, слот активен)
-        API->>DB: UPDATE Slot: уменьшить available_seats и available_equipment_stock
+        API->>DB: UPDATE Slot: уменьшить available_seats
+        opt Если needs_rental_equipment == true
+            API->>DB: UPDATE Slot: уменьшить available_equipment_stock
+        end
         API->>DB: INSERT INTO Booking (status='PENDING_PAYMENT')
         DB-->>API: Успешно (Booking ID)
         API->>DB: COMMIT TRANSACTION

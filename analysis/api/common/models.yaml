@@ -41,3 +41,11 @@ components:
         offset:
           type: integer
           description: Смещение (количество пропущенных элементов)
+
+  responses:
+    TooManyRequestsError:
+      description: Слишком много запросов (Rate Limiting).
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
