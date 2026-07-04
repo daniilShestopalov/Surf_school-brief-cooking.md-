@@ -1,0 +1,42 @@
+openapi: 3.0.3
+info:
+  title: Culinary Booking App API
+  version: 1.0.0
+  description: API for the mobile application of the Culinary Booking Studio.
+servers:
+  - url: https://api.culinary-studio.example.com/v1
+    description: Production server
+
+paths:
+  # Auth
+  /auth/send-code:
+    $ref: './auth/api.yaml#/paths/~1auth~1send-code'
+  /auth/verify-code:
+    $ref: './auth/api.yaml#/paths/~1auth~1verify-code'
+
+  # Slots
+  /slots:
+    $ref: './slots/api.yaml#/paths/~1slots'
+  /slots/{id}:
+    $ref: './slots/api.yaml#/paths/~1slots~1{id}'
+
+  # Bookings
+  /bookings:
+    $ref: './bookings/api.yaml#/paths/~1bookings'
+  /bookings/{id}/cancel:
+    $ref: './bookings/api.yaml#/paths/~1bookings~1{id}~1cancel'
+  /bookings/{id}/rating:
+    $ref: './bookings/api.yaml#/paths/~1bookings~1{id}~1rating'
+
+  # Profile
+  /profile:
+    $ref: './profile/api.yaml#/paths/~1profile'
+  /profile/allergies:
+    $ref: './profile/api.yaml#/paths/~1profile~1allergies'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

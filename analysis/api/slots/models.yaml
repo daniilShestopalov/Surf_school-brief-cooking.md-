@@ -1,0 +1,104 @@
+components:
+  schemas:
+    Slot:
+      type: object
+      required:
+        - id
+        - program_id
+        - chef_id
+        - datetime_start
+        - duration
+        - max_capacity
+        - available_seats
+        - status
+        - address
+        - available_equipment_stock
+        - equipment_tariff
+      properties:
+        id:
+          $ref: '../common/models.yaml#/components/schemas/UUID'
+        program_id:
+          $ref: '../common/models.yaml#/components/schemas/UUID'
+        chef_id:
+          $ref: '../common/models.yaml#/components/schemas/UUID'
+        datetime_start:
+          $ref: '../common/models.yaml#/components/schemas/Timestamp'
+        duration:
+          type: integer
+        max_capacity:
+          type: integer
+        available_seats:
+          type: integer
+        status:
+          type: string
+          enum: [SCHEDULED, CANCELLED]
+          description: Текущий статус проведения слота.
+        address:
+          type: string
+        available_equipment_stock:
+          type: integer
+        equipment_tariff:
+          type: integer
+          description: Стоимость аренды оборудования (в минимальных единицах валюты, например, копейках).
+
+    SlotDetails:
+      allOf:
+        - $ref: '#/components/schemas/Slot'
+        - type: object
+          properties:
+            program:
+              $ref: '#/components/schemas/ClassProgram'
+            chef:
+              $ref: '#/components/schemas/Chef'
+
+    ClassProgram:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - complexity
+        - base_price
+      properties:
+        id:
+          $ref: '../common/models.yaml#/components/schemas/UUID'
+        title:
+          type: string
+        description:
+          type: string
+        complexity:
+          type: string
+        base_price:
+          type: integer
+          description: Базовая стоимость участия (в минимальных единицах валюты, например, копейках).
+
+    Chef:
+      type: object
+      required:
+        - id
+        - name
+        - bio
+        - rating
+      properties:
+        id:
+          $ref: '../common/models.yaml#/components/schemas/UUID'
+        name:
+          type: string
+        bio:
+          type: string
+        rating:
+          type: number
+          format: float
+
+    SlotListResponse:
+      type: object
+      required:
+        - items
+        - meta
+      properties:
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Slot'
+        meta:
+          $ref: '../common/models.yaml#/components/schemas/PaginationMeta'

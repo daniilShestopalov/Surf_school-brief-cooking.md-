@@ -1,0 +1,9 @@
+apis:
+  main:
+    root: openapi.yaml
+extends:
+  - recommended
+rules:
+  no-unused-components: error
+  operation-operationId-unique: error
+  no-unresolved-refs: error

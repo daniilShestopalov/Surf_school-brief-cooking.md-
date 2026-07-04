@@ -1,0 +1,55 @@
+paths:
+  /slots:
+    get:
+      operationId: listSlots
+      summary: Получить расписание
+      description: Возвращает список доступных слотов на 7 дней или по фильтру дат. [Покрывает FR-40, FR-45].
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: start_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Список слотов.
+          content:
+            application/json:
+              schema:
+                $ref: './models.yaml#/components/schemas/SlotListResponse'
+
+  /slots/{id}:
+    get:
+      operationId: getSlot
+      summary: Получить детали слота
+      description: Возвращает детальную информацию о слоте. [Покрывает FR-50].
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            $ref: '../common/models.yaml#/components/schemas/UUID'
+      responses:
+        '200':
+          description: Детали слота.
+          content:
+            application/json:
+              schema:
+                $ref: './models.yaml#/components/schemas/SlotDetails'
+        '404':
+          description: Слот не найден.
+          content:
+            application/json:
+              schema:
+                $ref: '../common/models.yaml#/components/schemas/ErrorResponse'

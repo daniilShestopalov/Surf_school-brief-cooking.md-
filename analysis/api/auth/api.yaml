@@ -1,0 +1,36 @@
+paths:
+  /auth/send-code:
+    post:
+      operationId: sendCode
+      summary: Отправить код
+      description: Отправляет OTP код по SMS. [Покрывает FR-10].
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './models.yaml#/components/schemas/SendCodeRequest'
+      responses:
+        '200':
+          description: Код отправлен.
+
+  /auth/verify-code:
+    post:
+      operationId: verifyCode
+      summary: Проверить код
+      description: Проверяет OTP код. [Покрывает FR-10, FR-15, FR-20].
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './models.yaml#/components/schemas/VerifyCodeRequest'
+      responses:
+        '200':
+          description: Успешная авторизация.
+          content:
+            application/json:
+              schema:
+                $ref: './models.yaml#/components/schemas/AuthResponse'

@@ -1,0 +1,43 @@
+components:
+  schemas:
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Machine-readable error code.
+          example: "slot_full"
+        message:
+          type: string
+          description: Human-readable error message.
+          example: "Извините, места на этот класс только что закончились."
+
+    UUID:
+      type: string
+      format: uuid
+      example: "123e4567-e89b-12d3-a456-426614174000"
+
+    Timestamp:
+      type: string
+      format: date-time
+      example: "2023-11-20T18:00:00Z"
+
+    PaginationMeta:
+      type: object
+      required:
+        - total
+        - limit
+        - offset
+      properties:
+        total:
+          type: integer
+          description: Общее количество элементов
+        limit:
+          type: integer
+          description: Лимит элементов на страницу
+        offset:
+          type: integer
+          description: Смещение (количество пропущенных элементов)

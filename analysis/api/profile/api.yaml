@@ -1,0 +1,51 @@
+paths:
+  /profile:
+    get:
+      operationId: getProfile
+      summary: Получить профиль
+      description: Возвращает данные профиля клиента. [Покрывает FR-30].
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Данные профиля.
+          content:
+            application/json:
+              schema:
+                $ref: './models.yaml#/components/schemas/Client'
+    patch:
+      operationId: updateProfile
+      summary: Обновить профиль
+      description: Обновляет базовые данные профиля (Имя, Email). [Покрывает FR-15, UC-10].
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './models.yaml#/components/schemas/UpdateProfileRequest'
+      responses:
+        '200':
+          description: Данные профиля обновлены.
+          content:
+            application/json:
+              schema:
+                $ref: './models.yaml#/components/schemas/Client'
+
+  /profile/allergies:
+    patch:
+      operationId: updateAllergies
+      summary: Обновить аллергии
+      description: Обновляет список аллергий пользователя. [Покрывает FR-25].
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: './models.yaml#/components/schemas/UpdateAllergiesRequest'
+      responses:
+        '200':
+          description: Аллергии успешно обновлены.

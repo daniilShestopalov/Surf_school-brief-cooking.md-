@@ -1,0 +1,43 @@
+components:
+  schemas:
+    Client:
+      type: object
+      required:
+        - id
+        - phone
+        - is_regular
+      properties:
+        id:
+          $ref: '../common/models.yaml#/components/schemas/UUID'
+        phone:
+          type: string
+        email:
+          type: string
+          nullable: true
+        name:
+          type: string
+          nullable: true
+        allergy_profile:
+          type: array
+          items:
+            type: string
+        is_regular:
+          type: boolean
+
+    UpdateAllergiesRequest:
+      type: object
+      required:
+        - allergy_profile
+      properties:
+        allergy_profile:
+          type: array
+          items:
+            type: string
+
+    UpdateProfileRequest:
+      type: object
+      properties:
+        name:
+          type: string
+        email:
+          type: string

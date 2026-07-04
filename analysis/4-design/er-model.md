@@ -61,6 +61,7 @@
   * `id` (UUID, Primary Key) — уникальный идентификатор брони.
   * `client_id` (UUID, Foreign Key) — ссылка на Client.
   * `slot_id` (UUID, Foreign Key) — ссылка на Slot.
+  * `seats_count` (Integer) — количество забронированных мест.
   * `status` (String / Enum) — текущий статус (PENDING_PAYMENT, ACTIVE, CANCELLED_BY_CLIENT, CANCELLED_BY_STUDIO, COMPLETED).
   * `expires_at` (Timestamp, Nullable) — время истечения брони (для статуса PENDING_PAYMENT) [FR-80](../2-requirements/functional-requirements.md).
   * `needs_rental_equipment` (Boolean) — признак аренды экипировки [FR-65](../2-requirements/functional-requirements.md).
@@ -134,6 +135,7 @@ erDiagram
         UUID id PK
         UUID client_id FK
         UUID slot_id FK
+        int seats_count
         string status
         timestamp expires_at
         boolean needs_rental_equipment

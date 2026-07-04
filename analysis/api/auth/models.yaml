@@ -1,0 +1,34 @@
+components:
+  schemas:
+    SendCodeRequest:
+      type: object
+      required:
+        - phone
+        - personal_data_consent
+      properties:
+        phone:
+          type: string
+        personal_data_consent:
+          type: boolean
+
+    VerifyCodeRequest:
+      type: object
+      required:
+        - phone
+        - code
+      properties:
+        phone:
+          type: string
+        code:
+          type: string
+
+    AuthResponse:
+      type: object
+      required:
+        - token
+        - is_new_user
+      properties:
+        token:
+          type: string
+        is_new_user:
+          type: boolean

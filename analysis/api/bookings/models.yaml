@@ -1,0 +1,64 @@
+components:
+  schemas:
+    Booking:
+      type: object
+      required:
+        - id
+        - client_id
+        - slot_id
+        - status
+        - seats_count
+        - needs_rental_equipment
+      properties:
+        id:
+          $ref: '../common/models.yaml#/components/schemas/UUID'
+        client_id:
+          $ref: '../common/models.yaml#/components/schemas/UUID'
+        slot_id:
+          $ref: '../common/models.yaml#/components/schemas/UUID'
+        status:
+          type: string
+          enum: [PENDING_PAYMENT, ACTIVE, CANCELLED_BY_CLIENT, CANCELLED_BY_STUDIO, COMPLETED]
+          description: Текущий статус бронирования.
+        seats_count:
+          type: integer
+          description: Количество забронированных мест.
+        expires_at:
+          $ref: '../common/models.yaml#/components/schemas/Timestamp'
+          description: Время истечения брони (для PENDING_PAYMENT).
+        needs_rental_equipment:
+          type: boolean
+          description: Признак аренды экипировки.
+        chef_rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Оценка, выставленная шефу.
+
+    CreateBookingRequest:
+      type: object
+      required:
+        - slot_id
+        - seats_count
+      properties:
+        slot_id:
+          $ref: '../common/models.yaml#/components/schemas/UUID'
+        seats_count:
+          type: integer
+          minimum: 1
+          maximum: 3
+          description: Количество бронируемых мест.
+        needs_rental_equipment:
+          type: boolean
+          description: Признак необходимости аренды экипировки.
+
+    RateChefRequest:
+      type: object
+      required:
+        - rating
+      properties:
+        rating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          description: Оценка шефу.
