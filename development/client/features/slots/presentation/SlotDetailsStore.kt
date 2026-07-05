@@ -14,7 +14,8 @@ data class SlotDetailsState(
     val isLoading: Boolean = true,
     val isError: Boolean = false,
     val details: SlotDetails? = null,
-    val isUserBooked: Boolean = false // This would come from a real auth/booking state in a full app
+    val isUserBooked: Boolean = false, // This would come from a real auth/booking state in a full app
+    val userBookingId: String? = null
 ) : State
 
 sealed interface SlotDetailsIntent : Intent {
@@ -27,12 +28,10 @@ sealed interface SlotDetailsEffect : Effect {
     data class ShowError(val message: String) : SlotDetailsEffect
     object NavigateBack : SlotDetailsEffect
     data class OpenBookingFlow(
-        val slotId: String, 
-        val basePrice: Int, 
-        val equipmentTariff: Int, 
-        val availableEquipmentStock: Int
+        val slot: com.surfschool.domain.models.Slot,
+        val basePrice: Int
     ) : SlotDetailsEffect
-    object OpenUpcomingBookingDetails : SlotDetailsEffect
+    data class OpenUpcomingBookingDetails(val bookingId: String) : SlotDetailsEffect
 }
 
 class SlotDetailsStore(
@@ -45,15 +44,18 @@ class SlotDetailsStore(
             is SlotDetailsIntent.BookClicked -> {
                 state.value.details?.let {
                     emitEffect(SlotDetailsEffect.OpenBookingFlow(
-                        slotId = it.slot.id,
-                        basePrice = it.program.basePrice,
-                        equipmentTariff = it.slot.equipmentTariff,
-                        availableEquipmentStock = it.slot.availableEquipmentStock
+                        slot = it.slot,
+                        basePrice = it.program.basePrice
                     ))
                 }
             }
             is SlotDetailsIntent.NavigateToBookingClicked -> {
-                emitEffect(SlotDetailsEffect.OpenUpcomingBookingDetails)
+                state.value.userBookingId?.let {
+                    emitEffect(SlotDetailsEffect.OpenUpcomingBookingDetails(it))
+                } ?: run {
+                    // Fallback for mocked state
+                    emitEffect(SlotDetailsEffect.OpenUpcomingBookingDetails("mock_booking_id"))
+                }
             }
         }
     }

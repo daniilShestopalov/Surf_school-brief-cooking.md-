@@ -46,6 +46,11 @@ class SlotsCatalogStore(
 
     init {
         loadSlots()
+        screenModelScope.launch {
+            com.surfschool.domain.events.BookingEvents.bookingCancelled.collect {
+                loadSlots(isRefresh = true)
+            }
+        }
     }
 
     override fun onIntent(intent: SlotsCatalogIntent) {

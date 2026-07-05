@@ -15,7 +15,7 @@ import com.surfschool.features.auth.presentation.LoginEffect
 import com.surfschool.features.auth.presentation.LoginIntent
 import com.surfschool.features.auth.presentation.LoginScreenModel
 import com.surfschool.features.auth.presentation.LoginStep
-import com.surfschool.features.schedule.ui.ScheduleScreen
+import com.surfschool.core.navigation.RootScreen
 
 class LoginScreen : Screen {
     @Composable
@@ -29,7 +29,7 @@ class LoginScreen : Screen {
             screenModel.effect.collect { effect ->
                 when (effect) {
                     is LoginEffect.NavigateToRegistration -> navigator.push(RegistrationScreen())
-                    is LoginEffect.NavigateToSchedule -> navigator.replaceAll(ScheduleScreen())
+                    is LoginEffect.NavigateToSchedule -> navigator.replaceAll(RootScreen())
                     is LoginEffect.ShowErrorSnackbar -> snackbarHostState.showSnackbar(effect.message)
                 }
             }

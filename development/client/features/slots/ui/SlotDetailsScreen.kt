@@ -42,11 +42,10 @@ data class SlotDetailsScreen(val slotId: String) : Screen {
                         navigator.pop()
                     }
                     is SlotDetailsEffect.OpenBookingFlow -> {
-                        // In real app, open BS-001 BottomSheet or push screen
-                        // navigator.push(BookingScreen(effect.slotId))
+                        navigator.push(com.surfschool.features.booking.ui.BookingConfirmationBottomSheet(effect.slot, effect.basePrice))
                     }
                     is SlotDetailsEffect.OpenUpcomingBookingDetails -> {
-                        // navigator.push(UpcomingBookingDetailsScreen())
+                        navigator.push(com.surfschool.features.profile.ui.UpcomingBookingDetailsScreen(effect.bookingId))
                     }
                 }
             }

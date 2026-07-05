@@ -34,6 +34,7 @@ class ProfileRepository(
 
     suspend fun cancelBooking(bookingId: String) = withContext(Dispatchers.IO) {
         api.cancelBooking(bookingId)
+        com.surfschool.domain.events.BookingEvents.bookingCancelled.emit(bookingId)
     }
 
     private fun com.surfschool.features.profile.data.dto.BookingResponse.toDomain(): Booking {

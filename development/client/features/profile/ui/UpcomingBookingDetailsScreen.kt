@@ -101,7 +101,7 @@ class UpcomingBookingDetailsScreen(private val bookingId: String) : Screen {
 
                             if (booking.status == BookingStatus.PENDING_PAYMENT) {
                                 Button(
-                                    onClick = { /* navigator.push(PaymentDetailsScreen(...)) */ },
+                                    onClick = { navigator.push(com.surfschool.features.booking.ui.PaymentDetailsScreen(booking.id, booking.expiresAt ?: 0L)) },
                                     modifier = Modifier.fillMaxWidth()
                                 ) {
                                     Text("Оплатить")
