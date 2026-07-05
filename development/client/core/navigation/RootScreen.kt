@@ -18,7 +18,6 @@ import cafe.adriel.voyager.navigator.tab.Tab
 import cafe.adriel.voyager.navigator.tab.TabNavigator
 import cafe.adriel.voyager.navigator.tab.TabOptions
 import com.surfschool.features.profile.ui.ProfileScreen
-import com.surfschool.features.schedule.ui.ScheduleScreen
 import com.surfschool.features.slots.ui.SlotsCatalogScreen
 
 class RootScreen : Screen {
@@ -29,7 +28,6 @@ class RootScreen : Screen {
                 bottomBar = {
                     BottomNavigation {
                         TabNavigationItem(SlotsTab)
-                        TabNavigationItem(ScheduleTab)
                         TabNavigationItem(ProfileTab)
                     }
                 }
@@ -55,7 +53,7 @@ private fun RowScope.TabNavigationItem(tab: Tab) {
 
 object SlotsTab : Tab {
     override val options: TabOptions
-        @Composable get() = TabOptions(index = 0u, title = "Каталог")
+        @Composable get() = TabOptions(index = 0u, title = "Расписание")
 
     @Composable
     override fun Content() {
@@ -63,15 +61,6 @@ object SlotsTab : Tab {
     }
 }
 
-object ScheduleTab : Tab {
-    override val options: TabOptions
-        @Composable get() = TabOptions(index = 1u, title = "Расписание")
-
-    @Composable
-    override fun Content() {
-        Navigator(ScheduleScreen())
-    }
-}
 
 object ProfileTab : Tab {
     override val options: TabOptions

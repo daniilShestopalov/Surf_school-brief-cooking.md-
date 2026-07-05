@@ -38,7 +38,7 @@
 │   └── repositories/            # Интерфейсы репозиториев
 └── features/                    # Изолированные фичи (Экраны)
     ├── auth/                    # SCR-001 (Вход), SCR-002 (Регистрация)
-    ├── schedule/                # SCR-003 (Расписание), SCR-004 (Детали слота)
+    ├── slots/                   # SCR-003 (Расписание), SCR-004 (Детали слота)
     ├── booking/                 # BS-001 (Оформление), SCR-005 (Оплата), BS-003 (Отмена)
     └── profile/                 # SCR-006 (Мои записи), SCR-007 (Детали), BS-004 (Оценка)
         ├── ui/                  # Compose экраны (Screen)
@@ -61,14 +61,18 @@ data class BookingState(
     val equipmentTariff: Int = 0,
     val isEquipmentAvailable: Boolean = false,
     val isEquipmentChecked: Boolean = false,
-    val totalPrice: Int = 0 // Пересчитывается динамически (slotBasePrice + equipmentTariff)
+    val totalPrice: Int = 0, // Пересчитывается динамически (slotBasePrice + equipmentTariff)
+    val idempotencyKey: String? = null,
+    val allergies: List<String> = emptyList()
 )
 
 // 2. User Actions (Намерения пользователя) - Входящие события
 sealed interface BookingIntent {
+    data class Init(val slot: Slot, val basePrice: Int) : BookingIntent
     data class ToggleEquipment(val isChecked: Boolean) : BookingIntent
-    object ConfirmBooking : BookingIntent
-    object ConfirmWithoutEquipment : BookingIntent // Действие при согласии на бронь без инвентаря (обработка 409)
+    data class ConfirmBooking(val slotId: String) : BookingIntent
+    data class ConfirmWithoutEquipment(val slotId: String) : BookingIntent // Действие при согласии на бронь без инвентаря (обработка 409)
+    data class SaveAllergies(val allergies: List<String>) : BookingIntent
 }
 
 // 3. One-off Events (Сайд-эффекты) - Хранится в SharedFlow

@@ -14,7 +14,7 @@ import cafe.adriel.voyager.navigator.currentOrThrow
 import com.surfschool.features.auth.presentation.RegistrationEffect
 import com.surfschool.features.auth.presentation.RegistrationIntent
 import com.surfschool.features.auth.presentation.RegistrationScreenModel
-import com.surfschool.features.schedule.ui.ScheduleScreen
+import com.surfschool.core.navigation.RootScreen
 
 class RegistrationScreen : Screen {
     @Composable
@@ -27,7 +27,7 @@ class RegistrationScreen : Screen {
         LaunchedEffect(screenModel) {
             screenModel.effect.collect { effect ->
                 when (effect) {
-                    is RegistrationEffect.NavigateToSchedule -> navigator.replaceAll(ScheduleScreen())
+                    is RegistrationEffect.NavigateToSchedule -> navigator.replaceAll(RootScreen())
                     is RegistrationEffect.ShowErrorSnackbar -> snackbarHostState.showSnackbar(effect.message)
                 }
             }

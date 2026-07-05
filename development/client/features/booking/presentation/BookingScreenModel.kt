@@ -19,7 +19,8 @@ data class BookingState(
     val isEquipmentAvailable: Boolean = false,
     val isEquipmentChecked: Boolean = false,
     val totalPrice: Int = 0,
-    val idempotencyKey: String? = null
+    val idempotencyKey: String? = null,
+    val allergies: List<String> = emptyList()
 )
 
 sealed interface BookingIntent {
@@ -27,6 +28,7 @@ sealed interface BookingIntent {
     data class ToggleEquipment(val isChecked: Boolean) : BookingIntent
     data class ConfirmBooking(val slotId: String) : BookingIntent
     data class ConfirmWithoutEquipment(val slotId: String) : BookingIntent
+    data class SaveAllergies(val allergies: List<String>) : BookingIntent
 }
 
 sealed interface BookingEffect {
@@ -51,6 +53,7 @@ class BookingScreenModel(
             is BookingIntent.ToggleEquipment -> toggleEquipment(intent.isChecked)
             is BookingIntent.ConfirmBooking -> confirmBooking(intent.slotId, false)
             is BookingIntent.ConfirmWithoutEquipment -> confirmBooking(intent.slotId, true)
+            is BookingIntent.SaveAllergies -> mutableState.value = state.value.copy(allergies = intent.allergies)
         }
     }
 

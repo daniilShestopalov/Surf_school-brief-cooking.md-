@@ -111,7 +111,7 @@ class UpcomingBookingDetailsScreen(private val bookingId: String) : Screen {
                             if (booking.status == BookingStatus.ACTIVE || booking.status == BookingStatus.PENDING_PAYMENT) {
                                 OutlinedButton(
                                     onClick = {
-                                        screenModel.handleIntent(UpcomingBookingIntent.CancelBooking(booking.id))
+                                        bottomSheetNavigator.show(com.surfschool.features.booking.ui.CancellationBottomSheet(booking.id))
                                     },
                                     modifier = Modifier.fillMaxWidth()
                                 ) {

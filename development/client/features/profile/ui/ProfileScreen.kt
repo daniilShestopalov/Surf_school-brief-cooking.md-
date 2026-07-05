@@ -109,6 +109,7 @@ class ProfileScreen : Screen {
                 Spacer(modifier = Modifier.height(8.dp))
                 Text("Имя: ${state.client.name ?: "Не указано"}")
                 Text("Телефон: ${state.client.phone}")
+                Text("Email: ${state.client.email}")
                 if (state.client.allergyProfile.isNotEmpty()) {
                     Text("Аллергии: ${state.client.allergyProfile.joinToString()}")
                 } else {
