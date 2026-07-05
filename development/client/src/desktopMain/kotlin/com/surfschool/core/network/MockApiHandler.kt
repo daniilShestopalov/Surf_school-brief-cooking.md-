@@ -318,6 +318,28 @@ object MockApiHandler {
                     )
                 }
 
+                // Single Booking Details
+                url.contains("/bookings/") && !url.endsWith("/bookings") && !url.endsWith("/rating") && method == HttpMethod.Get -> {
+                    val bookingId = url.substringAfterLast("/")
+                    respond(
+                        content = ByteReadChannel("""
+                            {
+                                "id": "$bookingId",
+                                "client_id": "u0b8a211-0000-0000-0000-user10000001",
+                                "slot_id": "e0b8a211-1234-4321-abcd-slot10000001",
+                                "status": "ACTIVE",
+                                "seats_count": 1,
+                                "created_at": 1716000000000,
+                                "fixed_base_price": 500000,
+                                "equipment_tariff": 150000,
+                                "needs_rental_equipment": true
+                            }
+                        """.trimIndent()),
+                        status = HttpStatusCode.OK,
+                        headers = headersOf(HttpHeaders.ContentType, "application/json")
+                    )
+                }
+
                 else -> respondBadRequest()
             }
         }
