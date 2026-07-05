@@ -53,10 +53,16 @@ class LoginScreen : Screen {
             if (state.step == LoginStep.PhoneInput) {
                 OutlinedTextField(
                     value = state.phone,
-                    onValueChange = { screenModel.onIntent(LoginIntent.PhoneChanged(it)) },
+                    onValueChange = { input -> 
+                        val digitsOnly = input.filter { it.isDigit() }.take(11)
+                        screenModel.onIntent(LoginIntent.PhoneChanged(digitsOnly)) 
+                    },
                     label = { Text("Номер телефона") },
                     modifier = Modifier.fillMaxWidth(),
-                    enabled = !state.isLoading
+                    enabled = !state.isLoading,
+                    keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(
+                        keyboardType = androidx.compose.ui.text.input.KeyboardType.Phone
+                    )
                 )
                 
                 Row(
