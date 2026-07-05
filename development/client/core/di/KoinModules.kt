@@ -19,7 +19,7 @@ val coreModule: Module = module {
     // Network Client
     single { 
         createHttpClient(
-            engine = get(), // Expecting engine from platform-specific module
+            engine = com.surfschool.core.network.MockApiHandler.createMockEngine(),
             secureStorage = get()
         )
     }
