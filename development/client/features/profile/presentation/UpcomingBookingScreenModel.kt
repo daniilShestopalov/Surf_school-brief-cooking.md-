@@ -31,6 +31,7 @@ sealed class UpcomingBookingEffect {
     data class ShowToast(val message: String) : UpcomingBookingEffect()
     data class ShowErrorSnackbar(val message: String) : UpcomingBookingEffect()
     object GoBack : UpcomingBookingEffect()
+    object NavigateToLogin : UpcomingBookingEffect()
 }
 
 class UpcomingBookingScreenModel(
@@ -58,6 +59,8 @@ class UpcomingBookingScreenModel(
                 val booking = repository.getBooking(bookingId)
                 // If we had a Slot repository, we could also load slot here
                 _state.value = UpcomingBookingState.Content(booking)
+            } catch (e: com.surfschool.core.network.UnauthorizedException) {
+                _effect.emit(UpcomingBookingEffect.NavigateToLogin)
             } catch (e: Exception) {
                 _state.value = UpcomingBookingState.Error(e.message ?: "Ошибка загрузки")
             }
@@ -71,6 +74,8 @@ class UpcomingBookingScreenModel(
                 _effect.emit(UpcomingBookingEffect.ShowToast("Запись отменена"))
                 // Refresh booking or just go back
                 _effect.emit(UpcomingBookingEffect.GoBack)
+            } catch (e: com.surfschool.core.network.UnauthorizedException) {
+                _effect.emit(UpcomingBookingEffect.NavigateToLogin)
             } catch (e: Exception) {
                 _effect.emit(UpcomingBookingEffect.ShowErrorSnackbar(e.message ?: "Не удалось отменить"))
             }
@@ -82,6 +87,8 @@ class UpcomingBookingScreenModel(
             try {
                 repository.rateChef(bookingId, rating)
                 _effect.emit(UpcomingBookingEffect.ShowToast("Спасибо за оценку!"))
+            } catch (e: com.surfschool.core.network.UnauthorizedException) {
+                _effect.emit(UpcomingBookingEffect.NavigateToLogin)
             } catch (e: Exception) {
                 _effect.emit(UpcomingBookingEffect.ShowErrorSnackbar(e.message ?: "Не удалось отправить оценку"))
             }

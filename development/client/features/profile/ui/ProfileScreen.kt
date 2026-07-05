@@ -18,6 +18,9 @@ import com.surfschool.features.profile.presentation.ProfileIntent
 import com.surfschool.features.profile.presentation.ProfileScreenModel
 import com.surfschool.features.profile.presentation.ProfileState
 
+import cafe.adriel.voyager.core.lifecycle.LifecycleEffect
+import com.surfschool.features.auth.ui.LoginScreen
+
 class ProfileScreen : Screen {
     @Composable
     override fun Content() {
@@ -26,11 +29,17 @@ class ProfileScreen : Screen {
         val state by screenModel.state.collectAsState()
         val snackbarHostState = remember { SnackbarHostState() }
 
+        LifecycleEffect(
+            onStarted = {
+                screenModel.handleIntent(ProfileIntent.RefreshData)
+            }
+        )
+
         LaunchedEffect(screenModel) {
             screenModel.effect.collect { effect ->
                 when (effect) {
                     is ProfileEffect.NavigateToLogin -> {
-                        // navigator.replaceAll(LoginScreen()) // Navigation to auth
+                        navigator.replaceAll(LoginScreen())
                     }
                     is ProfileEffect.ShowErrorSnackbar -> {
                         snackbarHostState.showSnackbar(effect.message)

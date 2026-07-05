@@ -79,6 +79,8 @@ class ProfileScreenModel(
                     activeBookings = active,
                     pastBookings = past
                 )
+            } catch (e: com.surfschool.core.network.UnauthorizedException) {
+                _effect.emit(ProfileEffect.NavigateToLogin)
             } catch (e: Exception) {
                 if (_state.value is ProfileState.Content) {
                     _effect.emit(ProfileEffect.ShowErrorSnackbar("Не удалось обновить данные: ${e.message}"))

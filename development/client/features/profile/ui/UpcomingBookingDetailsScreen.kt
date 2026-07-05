@@ -12,6 +12,7 @@ import cafe.adriel.voyager.navigator.LocalNavigator
 import cafe.adriel.voyager.navigator.currentOrThrow
 import cafe.adriel.voyager.navigator.bottomSheet.LocalBottomSheetNavigator
 import com.surfschool.domain.models.BookingStatus
+import com.surfschool.features.auth.ui.LoginScreen
 import com.surfschool.features.profile.presentation.UpcomingBookingEffect
 import com.surfschool.features.profile.presentation.UpcomingBookingIntent
 import com.surfschool.features.profile.presentation.UpcomingBookingScreenModel
@@ -42,6 +43,9 @@ class UpcomingBookingDetailsScreen(private val bookingId: String) : Screen {
                     }
                     is UpcomingBookingEffect.GoBack -> {
                         navigator.pop()
+                    }
+                    is UpcomingBookingEffect.NavigateToLogin -> {
+                        navigator.replaceAll(LoginScreen())
                     }
                 }
             }
