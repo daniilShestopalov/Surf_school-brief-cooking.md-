@@ -21,6 +21,9 @@ import com.surfschool.features.slots.presentation.SlotsCatalogStore
 import com.surfschool.features.slots.presentation.models.SlotItem
 import kotlinx.coroutines.launch
 import kotlinx.datetime.LocalDate
+import kotlinx.datetime.toLocalDateTime
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.Instant
 
 class SlotsCatalogScreen : Screen {
     @Composable
@@ -138,7 +141,14 @@ fun SlotCard(slot: SlotItem, onClick: () -> Unit) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(text = slot.title, style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = "Начало: ${slot.datetimeStart} | Длительность: ${slot.duration} мин")
+            val formattedTime = remember(slot.datetimeStart) {
+                val localDateTime = kotlinx.datetime.Instant.fromEpochMilliseconds(slot.datetimeStart)
+                    .toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault())
+                val hour = localDateTime.hour.toString().padStart(2, '0')
+                val minute = localDateTime.minute.toString().padStart(2, '0')
+                "$hour:$minute"
+            }
+            Text(text = "Начало: $formattedTime | Длительность: ${slot.duration} мин")
             Spacer(modifier = Modifier.height(8.dp))
             if (slot.isCancelled) {
                 Text("Отменен", color = MaterialTheme.colorScheme.error)

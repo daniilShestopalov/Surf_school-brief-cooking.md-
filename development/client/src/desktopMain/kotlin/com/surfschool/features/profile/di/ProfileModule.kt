@@ -11,5 +11,5 @@ val profileModule = module {
     single { ProfileRepository(get()) }
     
     factory { ProfileScreenModel(get()) }
-    factory { UpcomingBookingScreenModel(get()) }
+    factory { UpcomingBookingScreenModel(get(), get()) }
 }

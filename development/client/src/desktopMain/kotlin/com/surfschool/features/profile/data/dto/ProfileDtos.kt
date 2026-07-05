@@ -31,3 +31,8 @@ data class BookingResponse(
 data class RateChefRequest(
     @SerialName("rating") val rating: Int
 )
+
+@Serializable
+data class UpdateAllergiesRequest(
+    @SerialName("allergy_profile") val allergyProfile: List<String>
+)

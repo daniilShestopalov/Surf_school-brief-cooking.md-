@@ -14,6 +14,8 @@ import com.surfschool.features.booking.presentation.BookingEffect
 import com.surfschool.features.booking.presentation.BookingIntent
 import com.surfschool.features.booking.presentation.BookingScreenModel
 import kotlinx.coroutines.flow.collectLatest
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowBack
 
 class BookingConfirmationBottomSheet(private val slot: Slot, private val basePrice: Int) : Screen {
     
@@ -54,7 +56,21 @@ class BookingConfirmationBottomSheet(private val slot: Slot, private val basePri
             }
         }
 
+        @OptIn(ExperimentalMaterial3Api::class)
         Scaffold(
+            topBar = {
+                TopAppBar(
+                    title = { Text("Оформление бронирования") },
+                    navigationIcon = {
+                        IconButton(onClick = { navigator.pop() }) {
+                            Icon(
+                                imageVector = Icons.Filled.ArrowBack,
+                                contentDescription = "Назад"
+                            )
+                        }
+                    }
+                )
+            },
             snackbarHost = { SnackbarHost(snackbarHostState) }
         ) { padding ->
             Column(
@@ -63,7 +79,6 @@ class BookingConfirmationBottomSheet(private val slot: Slot, private val basePri
                     .padding(16.dp)
                     .fillMaxWidth()
             ) {
-                Text("Оформление бронирования", style = MaterialTheme.typography.titleLarge)
                 Spacer(modifier = Modifier.height(16.dp))
                 
                 Text("Стоимость слота: ${state.slotBasePrice / 100} руб.")

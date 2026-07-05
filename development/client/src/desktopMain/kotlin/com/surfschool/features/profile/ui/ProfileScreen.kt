@@ -85,7 +85,10 @@ class ProfileScreen : Screen {
                             onBookingClick = { bookingId ->
                                 navigator.push(UpcomingBookingDetailsScreen(bookingId))
                             },
-                            onRefresh = { screenModel.handleIntent(ProfileIntent.RefreshData) }
+                            onRefresh = { screenModel.handleIntent(ProfileIntent.RefreshData) },
+                            onUpdateAllergies = { allergies ->
+                                screenModel.handleIntent(ProfileIntent.UpdateAllergies(allergies))
+                            }
                         )
                     }
                 }
@@ -97,7 +100,8 @@ class ProfileScreen : Screen {
     private fun ProfileContent(
         state: ProfileState.Content,
         onBookingClick: (String) -> Unit,
-        onRefresh: () -> Unit
+        onRefresh: () -> Unit,
+        onUpdateAllergies: (List<String>) -> Unit
     ) {
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
@@ -110,10 +114,26 @@ class ProfileScreen : Screen {
                 Text("Имя: ${state.client.name ?: "Не указано"}")
                 Text("Телефон: ${state.client.phone}")
                 Text("Email: ${state.client.email}")
-                if (state.client.allergyProfile.isNotEmpty()) {
-                    Text("Аллергии: ${state.client.allergyProfile.joinToString()}")
-                } else {
-                    Text("Аллергии: Нет")
+                
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (state.client.allergyProfile.isNotEmpty()) {
+                        Text("Аллергии: ${state.client.allergyProfile.joinToString()}")
+                    } else {
+                        Text("Аллергии: Нет")
+                    }
+                    Spacer(modifier = Modifier.width(8.dp))
+                    
+                    val bottomSheetNavigator = cafe.adriel.voyager.navigator.bottomSheet.LocalBottomSheetNavigator.current
+                    TextButton(onClick = {
+                        bottomSheetNavigator.show(
+                            ProfileAllergiesBottomSheet(
+                                currentAllergies = state.client.allergyProfile,
+                                onSave = onUpdateAllergies
+                            )
+                        )
+                    }) {
+                        Text("Изменить")
+                    }
                 }
                 Spacer(modifier = Modifier.height(16.dp))
             }

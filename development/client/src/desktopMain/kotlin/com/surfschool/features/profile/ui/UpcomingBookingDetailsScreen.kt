@@ -17,6 +17,7 @@ import com.surfschool.features.profile.presentation.UpcomingBookingEffect
 import com.surfschool.features.profile.presentation.UpcomingBookingIntent
 import com.surfschool.features.profile.presentation.UpcomingBookingScreenModel
 import com.surfschool.features.profile.presentation.UpcomingBookingState
+import kotlinx.datetime.toLocalDateTime
 
 class UpcomingBookingDetailsScreen(private val bookingId: String) : Screen {
 
@@ -84,13 +85,25 @@ class UpcomingBookingDetailsScreen(private val bookingId: String) : Screen {
                     }
                     is UpcomingBookingState.Content -> {
                         val booking = currentState.booking
+                        val slotDetails = currentState.slot
+                        
                         Column(
                             modifier = Modifier
                                 .fillMaxSize()
                                 .padding(16.dp),
                             verticalArrangement = Arrangement.spacedBy(16.dp)
                         ) {
-                            Text("Запись: ${booking.id}")
+                            if (slotDetails != null) {
+                                Text(slotDetails.program.title, style = MaterialTheme.typography.headlineMedium)
+                                
+                                val date = kotlinx.datetime.Instant.fromEpochMilliseconds(slotDetails.slot.datetimeStart)
+                                    .toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault())
+                                val dateString = "${date.dayOfMonth.toString().padStart(2, '0')}.${date.monthNumber.toString().padStart(2, '0')}.${date.year} ${date.hour.toString().padStart(2, '0')}:${date.minute.toString().padStart(2, '0')}"
+                                Text("Дата и время: $dateString", style = MaterialTheme.typography.bodyLarge)
+                                Text("Адрес: ${slotDetails.slot.address}", style = MaterialTheme.typography.bodyLarge)
+                            }
+
+                            Text("Запись: ${booking.id}", style = MaterialTheme.typography.bodySmall)
                             Text("Статус: ${booking.status.name}", style = MaterialTheme.typography.titleMedium)
 
                             if (booking.needsRentalEquipment) {

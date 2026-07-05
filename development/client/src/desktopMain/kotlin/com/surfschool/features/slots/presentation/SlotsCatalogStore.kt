@@ -16,6 +16,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.todayIn
 import kotlinx.datetime.plus
 import kotlinx.datetime.DatePeriod
+import kotlinx.datetime.toLocalDateTime
 
 data class SlotsCatalogState(
     val isLoading: Boolean = false,
@@ -81,11 +82,17 @@ class SlotsCatalogStore(
                 
                 val domainSlots = repository.listSlots(startDate = startDate, endDate = endDate)
                 
+                val filteredSlots = domainSlots.filter { slot ->
+                    val slotDate = kotlinx.datetime.Instant.fromEpochMilliseconds(slot.datetimeStart)
+                        .toLocalDateTime(kotlinx.datetime.TimeZone.currentSystemDefault()).date
+                    slotDate == state.value.selectedDate
+                }
+                
                 // Mapping domain Slot to presentation SlotItem
-                val items = domainSlots.map { slot ->
+                val items = filteredSlots.map { slot ->
                     SlotItem(
                         id = slot.id,
-                        title = "Мастер-класс (ID: ${slot.programId.take(4)})", // Placeholder for program title
+                        title = "Мастер-класс (ID: ${slot.programId.takeLast(4)})", // Placeholder for program title
                         datetimeStart = slot.datetimeStart,
                         duration = slot.duration,
                         availableSeats = slot.availableSeats,

@@ -15,8 +15,8 @@ import kotlinx.coroutines.launch
 sealed class UpcomingBookingState {
     object Loading : UpcomingBookingState()
     data class Content(
-        val booking: Booking
-        // In a real app we might also fetch Slot and attach it here
+        val booking: Booking,
+        val slot: com.surfschool.features.slots.domain.models.SlotDetails?
     ) : UpcomingBookingState()
     data class Error(val message: String) : UpcomingBookingState()
 }
@@ -35,7 +35,8 @@ sealed class UpcomingBookingEffect {
 }
 
 class UpcomingBookingScreenModel(
-    private val repository: ProfileRepository
+    private val repository: ProfileRepository,
+    private val slotsRepository: com.surfschool.features.slots.domain.SlotsRepository
 ) : ScreenModel {
 
     private val _state = MutableStateFlow<UpcomingBookingState>(UpcomingBookingState.Loading)
@@ -43,6 +44,18 @@ class UpcomingBookingScreenModel(
 
     private val _effect = MutableSharedFlow<UpcomingBookingEffect>()
     val effect: SharedFlow<UpcomingBookingEffect> = _effect.asSharedFlow()
+
+    init {
+        screenModelScope.launch {
+            com.surfschool.domain.events.BookingEvents.bookingCancelled.collect { cancelledId ->
+                val stateValue = _state.value
+                if (stateValue is UpcomingBookingState.Content && stateValue.booking.id == cancelledId) {
+                    _effect.emit(UpcomingBookingEffect.ShowToast("Запись отменена"))
+                    _effect.emit(UpcomingBookingEffect.GoBack)
+                }
+            }
+        }
+    }
 
     fun handleIntent(intent: UpcomingBookingIntent) {
         when (intent) {
@@ -57,8 +70,12 @@ class UpcomingBookingScreenModel(
         screenModelScope.launch {
             try {
                 val booking = repository.getBooking(bookingId)
-                // If we had a Slot repository, we could also load slot here
-                _state.value = UpcomingBookingState.Content(booking)
+                val slot = try {
+                    slotsRepository.getSlot(booking.slotId)
+                } catch (e: Exception) {
+                    null
+                }
+                _state.value = UpcomingBookingState.Content(booking, slot)
             } catch (e: com.surfschool.core.network.UnauthorizedException) {
                 _effect.emit(UpcomingBookingEffect.NavigateToLogin)
             } catch (e: Exception) {
@@ -71,9 +88,7 @@ class UpcomingBookingScreenModel(
         screenModelScope.launch {
             try {
                 repository.cancelBooking(bookingId)
-                _effect.emit(UpcomingBookingEffect.ShowToast("Запись отменена"))
-                // Refresh booking or just go back
-                _effect.emit(UpcomingBookingEffect.GoBack)
+                // The init block listens to BookingEvents.bookingCancelled and will emit GoBack/ShowToast
             } catch (e: com.surfschool.core.network.UnauthorizedException) {
                 _effect.emit(UpcomingBookingEffect.NavigateToLogin)
             } catch (e: Exception) {

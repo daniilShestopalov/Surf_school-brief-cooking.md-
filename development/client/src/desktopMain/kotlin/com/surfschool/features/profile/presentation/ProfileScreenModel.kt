@@ -29,6 +29,7 @@ sealed class ProfileIntent {
     object LoadData : ProfileIntent()
     object RefreshData : ProfileIntent()
     object Logout : ProfileIntent()
+    data class UpdateAllergies(val allergies: List<String>) : ProfileIntent()
 }
 
 sealed class ProfileEffect {
@@ -47,6 +48,11 @@ class ProfileScreenModel(
     val effect: SharedFlow<ProfileEffect> = _effect.asSharedFlow()
 
     init {
+        screenModelScope.launch {
+            com.surfschool.domain.events.BookingEvents.bookingCancelled.collect {
+                handleIntent(ProfileIntent.RefreshData)
+            }
+        }
         handleIntent(ProfileIntent.LoadData)
     }
 
@@ -55,6 +61,18 @@ class ProfileScreenModel(
             is ProfileIntent.LoadData -> loadData(showLoading = true)
             is ProfileIntent.RefreshData -> loadData(showLoading = false)
             is ProfileIntent.Logout -> logout()
+            is ProfileIntent.UpdateAllergies -> updateAllergies(intent.allergies)
+        }
+    }
+
+    private fun updateAllergies(allergies: List<String>) {
+        screenModelScope.launch {
+            try {
+                repository.updateAllergies(allergies)
+                loadData(showLoading = false)
+            } catch (e: Exception) {
+                _effect.emit(ProfileEffect.ShowErrorSnackbar("Ошибка сохранения аллергий: ${e.message}"))
+            }
         }
     }
 

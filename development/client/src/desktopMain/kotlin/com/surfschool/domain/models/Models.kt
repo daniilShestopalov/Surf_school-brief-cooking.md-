@@ -1,8 +1,10 @@
 package com.surfschool.domain.models
 
+import kotlinx.serialization.Serializable
 typealias UUID = String
 typealias Timestamp = Long // Represents Unix epoch in milliseconds
 
+@Serializable
 data class Client(
     val id: UUID,
     val phone: String,
@@ -11,6 +13,7 @@ data class Client(
     val allergyProfile: List<String>
 )
 
+@Serializable
 data class ClassProgram(
     val id: UUID,
     val title: String,
@@ -19,6 +22,7 @@ data class ClassProgram(
     val basePrice: Int // Price in kopecks
 )
 
+@Serializable
 data class Chef(
     val id: UUID,
     val name: String,
@@ -26,8 +30,10 @@ data class Chef(
     val rating: Float
 )
 
+@Serializable
 enum class SlotStatus { SCHEDULED, CANCELLED }
 
+@Serializable
 data class Slot(
     val id: UUID,
     val programId: UUID,
@@ -42,8 +48,10 @@ data class Slot(
     val equipmentTariff: Int // Price in kopecks
 )
 
+@Serializable
 enum class BookingStatus { PENDING_PAYMENT, ACTIVE, CANCELLED_BY_CLIENT, CANCELLED_BY_STUDIO, COMPLETED }
 
+@Serializable
 data class Booking(
     val id: UUID,
     val clientId: UUID,

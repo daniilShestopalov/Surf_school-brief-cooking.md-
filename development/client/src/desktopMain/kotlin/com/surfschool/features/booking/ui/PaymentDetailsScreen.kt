@@ -19,11 +19,17 @@ class PaymentDetailsScreen(private val bookingId: String, private val expiresAt:
         val snackbarHostState = remember { SnackbarHostState() }
         
         var timeRemaining by remember { mutableStateOf(calculateRemainingTime()) }
+        var isPaid by remember { mutableStateOf(false) }
 
         LaunchedEffect(Unit) {
-            while (timeRemaining > 0) {
+            val startTime = Clock.System.now().toEpochMilliseconds()
+            while (timeRemaining > 0 && !isPaid) {
                 delay(1000)
                 timeRemaining = calculateRemainingTime()
+                
+                if (Clock.System.now().toEpochMilliseconds() - startTime >= 5000) {
+                    isPaid = true
+                }
             }
         }
 
@@ -43,22 +49,32 @@ class PaymentDetailsScreen(private val bookingId: String, private val expiresAt:
                 val seconds = timeRemaining % 60
                 val timeString = String.format("%02d:%02d", minutes, seconds)
                 
-                Text(
-                    text = if (timeRemaining > 0) "Осталось времени: $timeString" else "Время вышло",
-                    color = if (timeRemaining > 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.headlineMedium
-                )
+                if (isPaid) {
+                    Text(
+                        text = "Оплата прошла успешно!",
+                        color = androidx.compose.ui.graphics.Color(0xFF4CAF50),
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                } else {
+                    Text(
+                        text = if (timeRemaining > 0) "Осталось времени: $timeString" else "Время вышло",
+                        color = if (timeRemaining > 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.headlineMedium
+                    )
+                }
                 
                 Spacer(modifier = Modifier.height(32.dp))
                 
-                Button(
-                    onClick = {
-                        // TODO: Implement clipboard copy
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    enabled = timeRemaining > 0
-                ) {
-                    Text("Скопировать реквизиты")
+                if (!isPaid) {
+                    Button(
+                        onClick = {
+                            // TODO: Implement clipboard copy
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        enabled = timeRemaining > 0
+                    ) {
+                        Text("Скопировать реквизиты")
+                    }
                 }
                 
                 Spacer(modifier = Modifier.height(16.dp))

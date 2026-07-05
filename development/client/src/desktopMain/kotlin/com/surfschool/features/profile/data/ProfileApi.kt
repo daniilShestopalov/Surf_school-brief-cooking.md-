@@ -3,10 +3,12 @@ package com.surfschool.features.profile.data
 import com.surfschool.features.profile.data.dto.BookingResponse
 import com.surfschool.features.profile.data.dto.ProfileResponse
 import com.surfschool.features.profile.data.dto.RateChefRequest
+import com.surfschool.features.profile.data.dto.UpdateAllergiesRequest
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.delete
 import io.ktor.client.request.get
+import io.ktor.client.request.patch
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
 
@@ -32,5 +34,11 @@ class ProfileApi(private val httpClient: HttpClient) {
 
     suspend fun cancelBooking(bookingId: String) {
         httpClient.delete("/bookings/$bookingId")
+    }
+
+    suspend fun updateAllergies(allergies: List<String>) {
+        httpClient.patch("/profile/allergies") {
+            setBody(UpdateAllergiesRequest(allergies))
+        }
     }
 }

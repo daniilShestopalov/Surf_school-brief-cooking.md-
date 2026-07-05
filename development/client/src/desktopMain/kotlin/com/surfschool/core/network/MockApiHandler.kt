@@ -4,9 +4,15 @@ import io.ktor.client.engine.mock.*
 import io.ktor.http.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.delay
+import kotlinx.datetime.todayIn
+import kotlinx.datetime.toInstant
+import kotlinx.serialization.json.Json
+import com.surfschool.features.profile.data.dto.UpdateAllergiesRequest
 
 object MockApiHandler {
     private val seenKeys = mutableSetOf<String>()
+    private var mockAllergies = emptyList<String>()
+    private var isBookingCancelled = false
 
     fun createMockEngine(): MockEngine {
         return MockEngine { request ->
@@ -42,6 +48,24 @@ object MockApiHandler {
 
                 // Slots list
                 url.endsWith("/slots") && method == HttpMethod.Get -> {
+                    val startDateStr = request.url.parameters["start_date"]
+                    val startDate = try {
+                        if (startDateStr != null) kotlinx.datetime.LocalDate.parse(startDateStr)
+                        else kotlinx.datetime.Clock.System.todayIn(kotlinx.datetime.TimeZone.currentSystemDefault())
+                    } catch (e: Exception) {
+                        kotlinx.datetime.Clock.System.todayIn(kotlinx.datetime.TimeZone.currentSystemDefault())
+                    }
+                    
+                    val timeZone = kotlinx.datetime.TimeZone.currentSystemDefault()
+                    val startOfDayInstant = kotlinx.datetime.LocalDateTime(startDate, kotlinx.datetime.LocalTime(0, 0)).toInstant(timeZone)
+                    val baseTime = startOfDayInstant.toEpochMilliseconds()
+                    
+                    val time1 = baseTime + 10 * 60 * 60 * 1000L
+                    val time2 = baseTime + 12 * 60 * 60 * 1000L
+                    val time3 = baseTime + 14 * 60 * 60 * 1000L
+                    val time4 = baseTime + 16 * 60 * 60 * 1000L
+                    val time5 = baseTime + 18 * 60 * 60 * 1000L
+
                     respond(
                         content = ByteReadChannel("""
                             [
@@ -49,7 +73,7 @@ object MockApiHandler {
                                     "id": "e0b8a211-1234-4321-abcd-slot10000001",
                                     "programId": "p0b8a211-0000-0000-0000-prog10000001",
                                     "chefId": "c0b8a211-0000-0000-0000-chef10000001",
-                                    "datetimeStart": 1716228000000,
+                                    "datetimeStart": $time1,
                                     "duration": 120,
                                     "maxCapacity": 10,
                                     "availableSeats": 5,
@@ -62,7 +86,7 @@ object MockApiHandler {
                                     "id": "slot-full-id",
                                     "programId": "p0b8a211-0000-0000-0000-prog10000002",
                                     "chefId": "c0b8a211-0000-0000-0000-chef10000002",
-                                    "datetimeStart": 1716314400000,
+                                    "datetimeStart": $time2,
                                     "duration": 150,
                                     "maxCapacity": 10,
                                     "availableSeats": 0,
@@ -75,7 +99,7 @@ object MockApiHandler {
                                     "id": "slot-no-equipment-id",
                                     "programId": "p0b8a211-0000-0000-0000-prog10000003",
                                     "chefId": "c0b8a211-0000-0000-0000-chef10000003",
-                                    "datetimeStart": 1716400800000,
+                                    "datetimeStart": $time3,
                                     "duration": 90,
                                     "maxCapacity": 10,
                                     "availableSeats": 2,
@@ -88,7 +112,7 @@ object MockApiHandler {
                                     "id": "slot-gone-id",
                                     "programId": "p0b8a211-0000-0000-0000-prog10000004",
                                     "chefId": "c0b8a211-0000-0000-0000-chef10000001",
-                                    "datetimeStart": 1716487200000,
+                                    "datetimeStart": $time4,
                                     "duration": 120,
                                     "maxCapacity": 10,
                                     "availableSeats": 5,
@@ -101,7 +125,7 @@ object MockApiHandler {
                                     "id": "slot-429-id",
                                     "programId": "p0b8a211-0000-0000-0000-prog10000005",
                                     "chefId": "c0b8a211-0000-0000-0000-chef10000002",
-                                    "datetimeStart": 1716573600000,
+                                    "datetimeStart": $time5,
                                     "duration": 120,
                                     "maxCapacity": 10,
                                     "availableSeats": 5,
@@ -139,7 +163,7 @@ object MockApiHandler {
                                     "id": "$id",
                                     "programId": "p0b8a211-0000-0000-0000-prog10000001",
                                     "chefId": "c0b8a211-0000-0000-0000-chef10000001",
-                                    "datetimeStart": 1716228000000,
+                                    "datetimeStart": ${kotlinx.datetime.LocalDateTime(kotlinx.datetime.Clock.System.todayIn(kotlinx.datetime.TimeZone.currentSystemDefault()), kotlinx.datetime.LocalTime(0, 0)).toInstant(kotlinx.datetime.TimeZone.currentSystemDefault()).toEpochMilliseconds() + 10 * 60 * 60 * 1000L},
                                     "duration": 120,
                                     "maxCapacity": 10,
                                     "availableSeats": ${if (id == "slot-full-id") 0 else 5},
@@ -211,17 +235,21 @@ object MockApiHandler {
                                 HttpHeaders.RetryAfter to listOf("30") // <-- Требуемый заголовок
                             )
                         )
-                        else -> respond(
-                            content = ByteReadChannel("""
-                                {
-                                    "id": "b0b8a211-0000-0000-0000-book10000001",
-                                    "status": "ACTIVE",
-                                    "paymentUrl": null
-                                }
-                            """.trimIndent()),
-                            status = HttpStatusCode.OK,
-                            headers = headersOf(HttpHeaders.ContentType, "application/json")
-                        )
+                        else -> {
+                            val expiresAt = kotlinx.datetime.Clock.System.now().toEpochMilliseconds() + 60 * 60 * 1000
+                            respond(
+                                content = ByteReadChannel("""
+                                    {
+                                        "id": "b0b8a211-0000-0000-0000-book10000001",
+                                        "status": "ACTIVE",
+                                        "paymentUrl": null,
+                                        "expires_at": $expiresAt
+                                    }
+                                """.trimIndent()),
+                                status = HttpStatusCode.OK,
+                                headers = headersOf(HttpHeaders.ContentType, "application/json")
+                            )
+                        }
                     }
                 }
                 
@@ -234,7 +262,7 @@ object MockApiHandler {
                                 "phone": "+79991234567",
                                 "name": "Иван Иванов",
                                 "email": "ivanov@example.com",
-                                "allergyProfile": ["Орехи", "Мед"]
+                                "allergy_profile": [${mockAllergies.joinToString(",") { "\"$it\"" }}]
                             }
                         """.trimIndent()),
                         status = HttpStatusCode.OK,
@@ -251,28 +279,87 @@ object MockApiHandler {
                     )
                 }
 
+                // Profile allergies update
+                url.endsWith("/profile/allergies") && method == HttpMethod.Patch -> {
+                    val bodyBytes = request.body.toByteArray()
+                    val bodyString = bodyBytes.decodeToString()
+                    try {
+                        val req = Json { ignoreUnknownKeys = true }.decodeFromString<UpdateAllergiesRequest>(bodyString)
+                        mockAllergies = req.allergyProfile
+                    } catch (e: Exception) {
+                        // fallback or ignore
+                    }
+                    respond(
+                        content = ByteReadChannel("""{}"""),
+                        status = HttpStatusCode.OK,
+                        headers = headersOf(HttpHeaders.ContentType, "application/json")
+                    )
+                }
+
                 // Active Bookings
                 url.endsWith("/bookings") && method == HttpMethod.Get -> {
+                    if (isBookingCancelled) {
+                        respond(
+                            content = ByteReadChannel("""[]"""),
+                            status = HttpStatusCode.OK,
+                            headers = headersOf(HttpHeaders.ContentType, "application/json")
+                        )
+                    } else {
+                        respond(
+                            content = ByteReadChannel("""
+                                [
+                                    {
+                                        "id": "b0b8a211-0000-0000-0000-book10000001",
+                                        "client_id": "u0b8a211-0000-0000-0000-user10000001",
+                                        "slot_id": "e0b8a211-1234-4321-abcd-slot10000001",
+                                        "status": "ACTIVE",
+                                        "seats_count": 1,
+                                        "created_at": 1716000000000,
+                                        "fixed_base_price": 500000,
+                                        "equipment_tariff": 150000,
+                                        "needs_rental_equipment": true
+                                    }
+                                ]
+                            """.trimIndent()),
+                            status = HttpStatusCode.OK,
+                            headers = headersOf(HttpHeaders.ContentType, "application/json")
+                        )
+                    }
+                }
+                
+                // Delete Booking
+                url.contains("/bookings/") && method == HttpMethod.Delete -> {
+                    isBookingCancelled = true
+                    respond(
+                        content = ByteReadChannel("""{}"""),
+                        status = HttpStatusCode.OK,
+                        headers = headersOf(HttpHeaders.ContentType, "application/json")
+                    )
+                }
+
+                // Single Booking Details
+                url.contains("/bookings/") && !url.endsWith("/bookings") && !url.endsWith("/rating") && method == HttpMethod.Get -> {
+                    val bookingId = url.substringAfterLast("/")
                     respond(
                         content = ByteReadChannel("""
-                            [
-                                {
-                                    "id": "b0b8a211-0000-0000-0000-book10000001",
-                                    "clientId": "u0b8a211-0000-0000-0000-user10000001",
-                                    "slotId": "e0b8a211-1234-4321-abcd-slot10000001",
-                                    "status": "ACTIVE",
-                                    "seatsCount": 1,
-                                    "createdAt": 1716000000000,
-                                    "fixedBasePrice": 500000,
-                                    "equipmentTariff": 150000,
-                                    "needsRentalEquipment": true
-                                }
-                            ]
+                            {
+                                "id": "$bookingId",
+                                "client_id": "u0b8a211-0000-0000-0000-user10000001",
+                                "slot_id": "e0b8a211-1234-4321-abcd-slot10000001",
+                                "status": "ACTIVE",
+                                "seats_count": 1,
+                                "created_at": 1716000000000,
+                                "fixed_base_price": 500000,
+                                "equipment_tariff": 150000,
+                                "needs_rental_equipment": true
+                            }
                         """.trimIndent()),
                         status = HttpStatusCode.OK,
                         headers = headersOf(HttpHeaders.ContentType, "application/json")
                     )
                 }
+
+
 
                 else -> respondBadRequest()
             }

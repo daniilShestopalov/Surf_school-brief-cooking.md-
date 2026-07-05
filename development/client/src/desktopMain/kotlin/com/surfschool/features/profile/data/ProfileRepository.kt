@@ -37,6 +37,10 @@ class ProfileRepository(
         com.surfschool.domain.events.BookingEvents.bookingCancelled.emit(bookingId)
     }
 
+    suspend fun updateAllergies(allergies: List<String>) = withContext(Dispatchers.IO) {
+        api.updateAllergies(allergies)
+    }
+
     private fun com.surfschool.features.profile.data.dto.BookingResponse.toDomain(): Booking {
         val parsedStatus = try {
             BookingStatus.valueOf(this.status)
