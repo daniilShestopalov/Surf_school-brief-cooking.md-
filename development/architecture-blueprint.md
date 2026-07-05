@@ -54,18 +54,21 @@
 
 ```kotlin
 // 1. Data State (Состояние UI) - Хранится в StateFlow
+// Примечание: все денежные значения (slotBasePrice, equipmentTariff, totalPrice) хранятся и обрабатываются в копейках согласно доменной модели.
 data class BookingState(
     val isLoading: Boolean = false,
     val slotBasePrice: Int = 0,
+    val equipmentTariff: Int = 0,
     val isEquipmentAvailable: Boolean = false,
     val isEquipmentChecked: Boolean = false,
-    val totalPrice: Int = 0 // Пересчитывается динамически
+    val totalPrice: Int = 0 // Пересчитывается динамически (slotBasePrice + equipmentTariff)
 )
 
 // 2. User Actions (Намерения пользователя) - Входящие события
 sealed interface BookingIntent {
     data class ToggleEquipment(val isChecked: Boolean) : BookingIntent
     object ConfirmBooking : BookingIntent
+    object ConfirmWithoutEquipment : BookingIntent // Действие при согласии на бронь без инвентаря (обработка 409)
 }
 
 // 3. One-off Events (Сайд-эффекты) - Хранится в SharedFlow
@@ -73,6 +76,7 @@ sealed interface BookingEffect {
     data class NavigateToPayment(val bookingId: String, val expiresAt: Long) : BookingEffect
     data class ShowErrorSnackbar(val message: String) : BookingEffect
     object ShowSlotFullDialog : BookingEffect
+    object AskToProceedWithoutEquipment : BookingEffect // Показ Action-снекбара при 409 EQUIPMENT_OUT
 }
 ```
 
@@ -94,3 +98,4 @@ sealed interface BookingEffect {
 - **Архитектурное правило:** Ключ генерируется **на слое Presentation (в `BookingScreenModel`)**, а НЕ в сетевом интерсепторе Ktor. 
 - **Жизненный цикл ключа:** Ключ создается один раз в момент открытия шторки бронирования (BS-001).
 - **Сценарий Retry:** Если пользователь нажимает "Подтвердить", но происходит сбой сети (Timeout), бэкенд, возможно, успел обработать запрос. Пользователь видит ошибку и снова нажимает "Повторить". Так как ключ хранится в стейте `ScreenModel`, приложение отправит **тот же самый `Idempotency-Key`**. Бэкенд распознает дубль, не создаст вторую бронь и не спишет двойную стоимость, а просто вернет успешный результат первой операции.
+- **Транспортный контракт:** Сгенерированный в `ScreenModel` UUID передается аргументом через методы доменного слоя (`UseCase` -> `Repository`) в слой Network, где Ktor-клиент обязан прикрепить его к POST-запросу в виде HTTP-заголовка `Idempotency-Key`.
