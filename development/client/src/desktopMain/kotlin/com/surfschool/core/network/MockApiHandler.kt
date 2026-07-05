@@ -4,6 +4,8 @@ import io.ktor.client.engine.mock.*
 import io.ktor.http.*
 import io.ktor.utils.io.*
 import kotlinx.coroutines.delay
+import kotlinx.datetime.todayIn
+import kotlinx.datetime.toInstant
 
 object MockApiHandler {
     private val seenKeys = mutableSetOf<String>()
@@ -42,6 +44,24 @@ object MockApiHandler {
 
                 // Slots list
                 url.endsWith("/slots") && method == HttpMethod.Get -> {
+                    val startDateStr = request.url.parameters["start_date"]
+                    val startDate = try {
+                        if (startDateStr != null) kotlinx.datetime.LocalDate.parse(startDateStr)
+                        else kotlinx.datetime.Clock.System.todayIn(kotlinx.datetime.TimeZone.currentSystemDefault())
+                    } catch (e: Exception) {
+                        kotlinx.datetime.Clock.System.todayIn(kotlinx.datetime.TimeZone.currentSystemDefault())
+                    }
+                    
+                    val timeZone = kotlinx.datetime.TimeZone.currentSystemDefault()
+                    val startOfDayInstant = kotlinx.datetime.LocalDateTime(startDate, kotlinx.datetime.LocalTime(0, 0)).toInstant(timeZone)
+                    val baseTime = startOfDayInstant.toEpochMilliseconds()
+                    
+                    val time1 = baseTime + 10 * 60 * 60 * 1000L
+                    val time2 = baseTime + 12 * 60 * 60 * 1000L
+                    val time3 = baseTime + 14 * 60 * 60 * 1000L
+                    val time4 = baseTime + 16 * 60 * 60 * 1000L
+                    val time5 = baseTime + 18 * 60 * 60 * 1000L
+
                     respond(
                         content = ByteReadChannel("""
                             [
@@ -49,7 +69,7 @@ object MockApiHandler {
                                     "id": "e0b8a211-1234-4321-abcd-slot10000001",
                                     "programId": "p0b8a211-0000-0000-0000-prog10000001",
                                     "chefId": "c0b8a211-0000-0000-0000-chef10000001",
-                                    "datetimeStart": 1716228000000,
+                                    "datetimeStart": $time1,
                                     "duration": 120,
                                     "maxCapacity": 10,
                                     "availableSeats": 5,
@@ -62,7 +82,7 @@ object MockApiHandler {
                                     "id": "slot-full-id",
                                     "programId": "p0b8a211-0000-0000-0000-prog10000002",
                                     "chefId": "c0b8a211-0000-0000-0000-chef10000002",
-                                    "datetimeStart": 1716314400000,
+                                    "datetimeStart": $time2,
                                     "duration": 150,
                                     "maxCapacity": 10,
                                     "availableSeats": 0,
@@ -75,7 +95,7 @@ object MockApiHandler {
                                     "id": "slot-no-equipment-id",
                                     "programId": "p0b8a211-0000-0000-0000-prog10000003",
                                     "chefId": "c0b8a211-0000-0000-0000-chef10000003",
-                                    "datetimeStart": 1716400800000,
+                                    "datetimeStart": $time3,
                                     "duration": 90,
                                     "maxCapacity": 10,
                                     "availableSeats": 2,
@@ -88,7 +108,7 @@ object MockApiHandler {
                                     "id": "slot-gone-id",
                                     "programId": "p0b8a211-0000-0000-0000-prog10000004",
                                     "chefId": "c0b8a211-0000-0000-0000-chef10000001",
-                                    "datetimeStart": 1716487200000,
+                                    "datetimeStart": $time4,
                                     "duration": 120,
                                     "maxCapacity": 10,
                                     "availableSeats": 5,
@@ -101,7 +121,7 @@ object MockApiHandler {
                                     "id": "slot-429-id",
                                     "programId": "p0b8a211-0000-0000-0000-prog10000005",
                                     "chefId": "c0b8a211-0000-0000-0000-chef10000002",
-                                    "datetimeStart": 1716573600000,
+                                    "datetimeStart": $time5,
                                     "duration": 120,
                                     "maxCapacity": 10,
                                     "availableSeats": 5,
