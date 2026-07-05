@@ -1,13 +1,13 @@
 # Implementation Roadmap & Checklist
 
 ## Этап 1: Инфраструктура и Core-слой (Foundation)
-- [ ] Настроить базовую многомодульную/пакетную структуру проекта (`core`, `domain`, `features`) согласно принципам Feature-Driven Development.
-- [ ] Интегрировать и настроить DI-контейнер (Koin) для инициализации базовых сервисов и платформозависимых компонентов.
-- [ ] Настроить сетевой клиент Ktor (Network Wrapper) с базовой конфигурацией и сериализацией (kotlinx.serialization).
-- [ ] Реализовать глобальный перехватчик (HttpResponseValidator) для автоматической обработки `401 Unauthorized` со сбросом сессии и редиректом.
-- [ ] Реализовать перехватчик для обработки `429 Too Many Requests`, парсинг заголовка `Retry-After` и маппинг в `RateLimitException`.
-- [ ] Создать и внедрить провайдер идемпотентности для генерации уникальных `Idempotency-Key` (UUIDv4) на слое Presentation.
-- [ ] Интегрировать Multiplatform Settings и настроить локальное безопасное хранилище (Secure Storage) для сессий и Bearer-токена.
+- [x] Настроить базовую многомодульную/пакетную структуру проекта (`core`, `domain`, `features`) согласно принципам Feature-Driven Development.
+- [x] Интегрировать и настроить DI-контейнер (Koin) для инициализации базовых сервисов и платформозависимых компонентов.
+- [x] Настроить сетевой клиент Ktor (Network Wrapper) с базовой конфигурацией и сериализацией (kotlinx.serialization).
+- [x] Реализовать глобальный перехватчик (HttpResponseValidator) для автоматической обработки `401 Unauthorized` со сбросом сессии и редиректом.
+- [x] Реализовать перехватчик для обработки `429 Too Many Requests`, парсинг заголовка `Retry-After` и маппинг в `RateLimitException`.
+- [x] Создать и внедрить провайдер идемпотентности для генерации уникальных `Idempotency-Key` (UUIDv4) на слое Presentation.
+- [x] Интегрировать Multiplatform Settings и настроить локальное безопасное хранилище (Secure Storage) для сессий и Bearer-токена.
 
 ## Этап 2: Доменный слой и Shared Components
 - [ ] Реализовать базовые абстракции MVI (интерфейсы `State`, `Intent`, `Effect` и базовый `ScreenModel`).
